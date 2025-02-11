@@ -38,7 +38,7 @@ namespace Otlob.APIs.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrderForUser(int id , string email)
         {
-            var order = _orderService.GetOrderByIdAsync(id, email);
+            var order = await _orderService.GetOrderByIdAsync(id, email);
             if (order == null) return BadRequest();
             return Ok(order);
         }

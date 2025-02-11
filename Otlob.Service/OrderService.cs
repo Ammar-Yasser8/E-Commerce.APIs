@@ -63,10 +63,7 @@ namespace Otlob.Service
             var orderRepo = _unitOfWork.Repository<Order>();
             var spec = new OrderSpec(orderId, buyerEmail);
             var order = await orderRepo.GetAsyncWithSpec(spec);
-
             return order;
-
-
         }
 
         public async Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string buyerEmail)
