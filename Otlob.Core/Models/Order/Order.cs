@@ -12,23 +12,23 @@ namespace Otlob.Core.Models.Order
         {
             
         }
-        public Order(string buyerName, Address shippingAddress, DeliveryMethod deliveryMethod, ICollection<OrderItem> orders, decimal subTotal)
+        public Order(string buyerEmail, Address shippingAddress, DeliveryMethod deliveryMethod, ICollection<OrderItem> items, decimal subTotal)
         {
-            BuyerName = buyerName;
+            BuyerEmail = buyerEmail;
             ShippingAddress = shippingAddress;
             DeliveryMethod = deliveryMethod;
-            Orders = orders;
+            Items = items;
             SubTotal = subTotal;
         }
 
 
-        public string BuyerName { get; set; }
+        public string BuyerEmail { get; set; }
         public DateTimeOffset OrderDate { get; set; } = DateTimeOffset.UtcNow;
         public OrderStatus OrderStatus { get; set; } = OrderStatus.Pending;
         public Address ShippingAddress { get; set; }
         //public int DeliveryMethodId { get; set; }
         public DeliveryMethod DeliveryMethod { get; set; }
-        public ICollection<OrderItem> Orders { get; set; } = new HashSet<OrderItem>();
+        public ICollection<OrderItem> Items { get; set; } = new HashSet<OrderItem>();
         public decimal SubTotal { get; set; }
         public decimal GetTotal()
             => SubTotal + DeliveryMethod.Cost;

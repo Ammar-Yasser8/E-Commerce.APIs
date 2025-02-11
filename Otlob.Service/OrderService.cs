@@ -2,6 +2,7 @@
 using Otlob.Core.IRepositories;
 using Otlob.Core.Models;
 using Otlob.Core.Models.Order;
+using Otlob.Core.Specification.OrderSpecifications;
 using Otlob.Repository.Repositories;
 using Otlob.Repository.Service.Contract;
 using System;
@@ -57,15 +58,23 @@ namespace Otlob.Service
 
         }
 
-        public Task<Order> GetOrderByIdAsync(int orderId, string buyerEmail)
+        public async Task<Order?> GetOrderByIdAsync(int orderId, string buyerEmail)
         {
+            var orderRepo = _unitOfWork.Repository<Order>();
+            var spec = new OrderSpec(orderId, buyerEmail);
+            var order = await orderRepo.GetAsyncWithSpec(spec);
 
-            throw new NotImplementedException();
+            return order;
+
+
         }
 
-        public Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string buyerEmail)
+        public async Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string buyerEmail)
         {
-            throw new NotImplementedException();
+            var orderRepo = _unitOfWork.Repository<Order>();
+            var spec = new OrderSpec(buyerEmail);
+            var orders = await orderRepo.GetAllAsyncWithSpec(spec);
+            return orders.ToList().AsReadOnly();
         }
     }
 }

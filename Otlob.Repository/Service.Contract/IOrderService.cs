@@ -11,7 +11,7 @@ namespace Otlob.Repository.Service.Contract
     {
         Task<Order?> CreateOrderAsync(string buyerEmail ,string basketId ,Address shippingAddress ,int deliveryMethodId);
         Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string buyerEmail);
-        Task<Order> GetOrderByIdAsync(int orderId, string buyerEmail);
+        Task<Order?> GetOrderByIdAsync(int orderId, string buyerEmail);
 
     }
 }
