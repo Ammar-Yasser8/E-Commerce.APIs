@@ -51,6 +51,7 @@ namespace Otlob.APIs
             builder.Services.AddScoped(typeof(IOrderService), typeof(OrderService));
             builder.Services.AddScoped<IBasketRepository, BasketRepository>();  
             builder.Services.AddAutoMapper(typeof(MappingProfile));
+            builder.Services.AddScoped(typeof(IAuthService), typeof(AuthService));   
             var app = builder.Build();
 
             // Create a scope to get an instance of the DbContext Explicitly

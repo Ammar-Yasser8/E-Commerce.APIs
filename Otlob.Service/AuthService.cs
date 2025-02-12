@@ -46,9 +46,6 @@ namespace Otlob.Service
             );
             // create token
             return new JwtSecurityTokenHandler().WriteToken(token);
-
-
-
         }
     }
 }
