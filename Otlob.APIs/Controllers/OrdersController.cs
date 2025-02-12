@@ -43,6 +43,16 @@ namespace Otlob.APIs.Controllers
             return Ok(_mapper.Map<Order, OrderToReturnDto>(order));
         }
 
+        // Get : api/orders/deliveryMethods
+        [HttpGet("deliveryMethods")]
+        public async Task<ActionResult<IReadOnlyList<DeliveryMethod>>> GetDeliveryMethods()
+        {
+            var deliveryMethods = await _orderService.GetDeliveryMethodsAsync();
+            if (deliveryMethods == null) return BadRequest();
+            return Ok(deliveryMethods);
+
+        }
+
 
     }
 }

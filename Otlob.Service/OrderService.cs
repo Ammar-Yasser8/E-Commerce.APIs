@@ -58,6 +58,12 @@ namespace Otlob.Service
 
         }
 
+        public async Task<IReadOnlyList<DeliveryMethod>> GetDeliveryMethodsAsync()
+        {
+            var deliveryMethodRepo = _unitOfWork.Repository<DeliveryMethod>();
+            var deliveryMethods = await deliveryMethodRepo.GetAllAsync();
+            return deliveryMethods.ToList().AsReadOnly();
+        }
         public async Task<Order?> GetOrderByIdAsync(int orderId, string buyerEmail)
         {
             var orderRepo = _unitOfWork.Repository<Order>();
