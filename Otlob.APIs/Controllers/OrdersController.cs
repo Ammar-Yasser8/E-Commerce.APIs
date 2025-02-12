@@ -50,8 +50,9 @@ namespace Otlob.APIs.Controllers
             var deliveryMethods = await _orderService.GetDeliveryMethodsAsync();
             if (deliveryMethods == null) return BadRequest();
             return Ok(deliveryMethods);
-
         }
+
+
 
 
     }
