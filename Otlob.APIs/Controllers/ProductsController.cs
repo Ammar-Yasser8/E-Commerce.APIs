@@ -31,6 +31,7 @@ namespace Otlob.APIs.Controllers
         // GET: api/Products
         [HttpGet]
         [Authorize]
+
         public async Task<ActionResult<Pagination<ProductToReverseDto>>> GetProducts([FromQuery] ProductSpecParams specParams)
         {
             var spec = new ProductWithBrandandCategory(specParams);

@@ -23,6 +23,7 @@ namespace Otlob.APIs.Controllers
         }
         // POST: api/Account/Login
         [HttpPost("Login")]
+
         public async Task<ActionResult<UserDto>>Login(LoginDto loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);

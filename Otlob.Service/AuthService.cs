@@ -41,6 +41,7 @@ namespace Otlob.Service
                 audience: _configuration["JWT:ValidAudience"],
                 issuer: _configuration["JWT:ValidIssuer"],
                 expires: DateTime.Now.AddDays(1),
+
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authKey, SecurityAlgorithms.HmacSha256Signature)
             );
