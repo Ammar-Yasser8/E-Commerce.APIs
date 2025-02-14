@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Otlob.APIs.Helper;
 using Otlob.Core;
 using Otlob.Core.IRepositories;
@@ -12,6 +14,7 @@ using Otlob.Repository.Repositories;
 using Otlob.Repository.Service.Contract;
 using Otlob.Service;
 using StackExchange.Redis;
+using System.Text;
 
 namespace Otlob.APIs
 {
@@ -51,7 +54,28 @@ namespace Otlob.APIs
             builder.Services.AddScoped(typeof(IOrderService), typeof(OrderService));
             builder.Services.AddScoped<IBasketRepository, BasketRepository>();  
             builder.Services.AddAutoMapper(typeof(MappingProfile));
-            builder.Services.AddScoped(typeof(IAuthService), typeof(AuthService));   
+            builder.Services.AddScoped(typeof(IAuthService), typeof(AuthService));
+            builder.Services.AddAuthentication(
+                op =>
+                {
+                    op.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    op.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                }
+
+                ).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+                    ValidateAudience = true,
+                    ValidAudience = builder.Configuration["JWT:ValidAudience"],
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"])),
+                    ClockSkew = TimeSpan.FromDays(1)
+                };
+            }); 
             var app = builder.Build();
 
             // Create a scope to get an instance of the DbContext Explicitly
@@ -81,10 +105,8 @@ namespace Otlob.APIs
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
-
             app.MapControllers();
 
             app.Run();

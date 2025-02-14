@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Otlob.APIs.DTOs;
@@ -28,6 +30,7 @@ namespace Otlob.APIs.Controllers
         }
         // GET: api/Products
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<Pagination<ProductToReverseDto>>> GetProducts([FromQuery] ProductSpecParams specParams)
         {
             var spec = new ProductWithBrandandCategory(specParams);

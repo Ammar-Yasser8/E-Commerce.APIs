@@ -40,7 +40,7 @@ namespace Otlob.Service
             var token = new JwtSecurityToken(
                 audience: _configuration["JWT:ValidAudience"],
                 issuer: _configuration["JWT:ValidIssuer"],
-                expires: DateTime.Now.AddHours(3),
+                expires: DateTime.Now.AddDays(1),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authKey, SecurityAlgorithms.HmacSha256Signature)
             );
