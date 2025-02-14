@@ -47,7 +47,7 @@ namespace Otlob.APIs.Controllers
             if (order == null) return BadRequest();
             return Ok(_mapper.Map<Order, OrderToReturnDto>(order));
         }
-
+         
         // Get : api/orders/deliveryMethods
         [HttpGet("deliveryMethods")]
         public async Task<ActionResult<IReadOnlyList<DeliveryMethod>>> GetDeliveryMethods()

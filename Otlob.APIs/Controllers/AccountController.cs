@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Otlob.APIs.DTOs;
 using Otlob.Core.IRepositories;
 using Otlob.Core.Models.Identity;
+using System.Security.Claims;
 
 namespace Otlob.APIs.Controllers
 {
@@ -23,7 +24,6 @@ namespace Otlob.APIs.Controllers
         }
         // POST: api/Account/Login
         [HttpPost("Login")]
-
         public async Task<ActionResult<UserDto>>Login(LoginDto loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
@@ -56,6 +56,23 @@ namespace Otlob.APIs.Controllers
                 Email = user.Email,
                 Token = await _authService.CreateTokenAsync(user, _userManager),
 
+            });
+
+            
+
+        }
+        // Get : api/Account
+        [HttpGet]
+        public async Task<ActionResult<UserDto>> GetCurrentUser()
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null) return Unauthorized("un authorized , Email not exist");
+            return Ok(new UserDto
+            {
+                DisplayName = user.DisplayName,
+                Email = user.Email,
+                Token = await _authService.CreateTokenAsync(user, _userManager),
             });
 
         }
