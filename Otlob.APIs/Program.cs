@@ -53,6 +53,7 @@ namespace Otlob.APIs
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped(typeof(IOrderService), typeof(OrderService));
             builder.Services.AddScoped<IBasketRepository, BasketRepository>();  
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
             builder.Services.AddAutoMapper(typeof(MappingProfile));
             builder.Services.AddScoped(typeof(IAuthService), typeof(AuthService));
             builder.Services.AddAuthentication(
