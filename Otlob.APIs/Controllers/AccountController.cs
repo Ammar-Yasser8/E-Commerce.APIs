@@ -82,8 +82,6 @@ namespace Otlob.APIs.Controllers
             });
 
         }
-
-
         // Get : api/account/address 
         [HttpGet("address")]
         public async Task<ActionResult<AddressDto>> GetUserAddress()
@@ -91,7 +89,24 @@ namespace Otlob.APIs.Controllers
             var user = await _userManager.FindUserWithAddressAsync(User);
             var address = _mapper.Map<AddressDto>(user.Address);
             return Ok(address);
-
         }
+        // Put : api/account address
+        [HttpPut("address")]
+        public async Task<ActionResult<AddressDto>> UpdateUserAddress(AddressDto updatedAddress)
+        {
+            var user = await _userManager.FindUserWithAddressAsync(User);
+
+            if (user?.Address == null) return NotFound("User or Address not found");
+            _mapper.Map(updatedAddress, user.Address);
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded) return Ok(_mapper.Map<AddressDto>(user.Address));
+            return BadRequest("Problem updating the user");
+        }
+
+
+
+
+
+
     }
 }    

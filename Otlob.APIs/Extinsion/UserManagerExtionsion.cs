@@ -13,9 +13,6 @@ namespace Otlob.APIs.Extension
             var user = userManager.Users.Include(u => u.Address).SingleOrDefaultAsync(u => u.Email == email);
             return await user;
 
-
-
-
         }
     }
 }

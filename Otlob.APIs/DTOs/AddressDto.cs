@@ -4,6 +4,7 @@ namespace Otlob.APIs.DTOs
 {
     public class AddressDto
     {
+
         [Required]
         public string FirstName { get; set; }
         [Required]
