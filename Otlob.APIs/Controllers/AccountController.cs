@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -47,6 +48,8 @@ namespace Otlob.APIs.Controllers
         [HttpPost("Register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto model)
         {
+            if(CheckEmailExistAsync(model.Email).Result.Value)
+                return BadRequest("Email is already exist");
             var user = new AppUser
             {
                 DisplayName = model.DisplayName,
@@ -69,6 +72,7 @@ namespace Otlob.APIs.Controllers
         }
         // Get : api/Account
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
             var email = User.FindFirstValue(ClaimTypes.Email);
@@ -82,7 +86,8 @@ namespace Otlob.APIs.Controllers
             });
 
         }
-        // Get : api/account/address 
+        // Get : api/account/address
+        [Authorize]
         [HttpGet("address")]
         public async Task<ActionResult<AddressDto>> GetUserAddress()
         {
@@ -91,6 +96,7 @@ namespace Otlob.APIs.Controllers
             return Ok(address);
         }
         // Put : api/account address
+        [Authorize]
         [HttpPut("address")]
         public async Task<ActionResult<AddressDto>> UpdateUserAddress(AddressDto updatedAddress)
         {
@@ -103,9 +109,12 @@ namespace Otlob.APIs.Controllers
             return BadRequest("Problem updating the user");
         }
 
-
-
-
+        // GET : api/account/emailexist
+        [HttpGet("emailexist")]
+        public async Task<ActionResult<bool>> CheckEmailExistAsync(string email)
+        {
+            return await _userManager.FindByEmailAsync(email) != null;
+        }
 
 
     }
