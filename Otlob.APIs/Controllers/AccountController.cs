@@ -1,39 +1,45 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Otlob.APIs.DTOs;
+using Otlob.APIs.Extension;
 using Otlob.Core.IRepositories;
 using Otlob.Core.Models.Identity;
 using System.Security.Claims;
 
 namespace Otlob.APIs.Controllers
 {
-   
+
     public class AccountController : BaseApiController
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IAuthService _authService;
-        public AccountController(UserManager<AppUser>userManager,
+        private readonly IMapper _mapper;
+
+        public AccountController(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
-            IAuthService authService)
+            IAuthService authService,
+            IMapper mapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _authService = authService;
+            _mapper = mapper;
         }
         // POST: api/Account/Login
         [HttpPost("Login")]
-        public async Task<ActionResult<UserDto>>Login(LoginDto loginDto)
+        public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
             if (user == null) return Unauthorized("un authorized , Email not exist");
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
             if (!result.Succeeded) return Unauthorized("un authorized , you are not");
-            return Ok( new UserDto
+            return Ok(new UserDto
             {
                 DisplayName = user.DisplayName,
-                Token = await _authService.CreateTokenAsync(user,_userManager),
+                Token = await _authService.CreateTokenAsync(user, _userManager),
                 Email = user.Email!
             });
         }
@@ -58,7 +64,7 @@ namespace Otlob.APIs.Controllers
 
             });
 
-            
+
 
         }
         // Get : api/Account
@@ -76,5 +82,16 @@ namespace Otlob.APIs.Controllers
             });
 
         }
+
+
+        // Get : api/account/address 
+        [HttpGet("address")]
+        public async Task<ActionResult<AddressDto>> GetUserAddress()
+        {
+            var user = await _userManager.FindUserWithAddressAsync(User);
+            var address = _mapper.Map<AddressDto>(user.Address);
+            return Ok(address);
+
+        }
     }
-}
+}    

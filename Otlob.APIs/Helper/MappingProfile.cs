@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Otlob.APIs.DTOs;
 using Otlob.Core.Models;
+using Otlob.Core.Models.Identity;
 using Otlob.Core.Models.Order;
+using Address = Otlob.Core.Models.Identity.Address;
 
 namespace Otlob.APIs.Helper
 {
@@ -23,7 +25,11 @@ namespace Otlob.APIs.Helper
                 .ForMember(d => d.ProductId, o => o.MapFrom(s => s.Product.ProductId))
                 .ForMember(d => d.ProductName, o => o.MapFrom(s => s.Product.ProductName))
                 .ForMember(d => d.PictureUrl, o => o.MapFrom(s => s.Product.PictureUrl))
-                .ForMember(d => d.PictureUrl, o => o.MapFrom<OrderItemPictureResolver>());  
+                .ForMember(d => d.PictureUrl, o => o.MapFrom<OrderItemPictureResolver>());
+
+            // Address of Identity to AddressDTo
+            CreateMap<Address, AddressDto>();
+              
 
 
 
