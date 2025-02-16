@@ -26,6 +26,7 @@ namespace Otlob.APIs.Controllers
         }
         // POST: api/Basket
         [HttpPost]
+
         public async Task<ActionResult<CustomerBasket>> UpdateBasket(CustomerBasketDto basket)
         {
             var mappedBasket = _mapper.Map<CustomerBasketDto, CustomerBasket>(basket);  
