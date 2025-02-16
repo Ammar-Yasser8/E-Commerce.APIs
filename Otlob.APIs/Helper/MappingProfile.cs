@@ -28,8 +28,8 @@ namespace Otlob.APIs.Helper
                 .ForMember(d => d.PictureUrl, o => o.MapFrom<OrderItemPictureResolver>());
 
             // Address of Identity to AddressDTo
-            CreateMap<Address, AddressDto>();
-              
+            CreateMap<Otlob.Core.Models.Order.Address, Otlob.APIs.DTOs.AddressDto>().ReverseMap();   
+
 
 
 

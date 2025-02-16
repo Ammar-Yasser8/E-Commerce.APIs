@@ -21,6 +21,8 @@ namespace Otlob.Core.Specification.OrderSpecifications
             Includes.Add(O => O.DeliveryMethod);
         }
 
+        
+
 
 
     }
