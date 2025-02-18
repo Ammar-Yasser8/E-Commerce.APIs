@@ -17,23 +17,24 @@ namespace Otlob.APIs.Controllers
         private readonly ILogger _logger;
         private const string _whSecret = "whsec_7cfa89747796288162e08254a006b112ca0c64f41cfc97daa8319d864a72c5f6";
 
-        public PaymentsController(IPaymentService paymentService , ILogger logger)
+        public PaymentsController(IPaymentService paymentService , ILogger<PaymentsController> logger)
         {
             _paymentService = paymentService;
             _logger = logger;
         }
         // POST : api/payments/basketId
         [HttpPost("{basketId}")]
-        [ValidateAntiForgeryToken]
         public async Task<ActionResult<CustomerBasket>> CreateOrUpdatePaymentIntent(string basketId)
         {
+            _logger.LogInformation("Processing payment intent for basket: {basketId}", basketId);
+
             var basket = await _paymentService.CreateOrUpdatePaymentIntent(basketId);
             if (basket == null) return BadRequest("Problem with your basket");
+
             return basket;
         }
 
         [HttpPost("webhook")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> StripeWebhook()
         {
             var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();

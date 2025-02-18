@@ -26,7 +26,6 @@ namespace Otlob.APIs.Controllers
         }
         // POST: api/Basket
         [HttpPost]
-        [ValidateAntiForgeryToken]
 
         public async Task<ActionResult<CustomerBasket>> UpdateBasket(CustomerBasketDto basket)
         {

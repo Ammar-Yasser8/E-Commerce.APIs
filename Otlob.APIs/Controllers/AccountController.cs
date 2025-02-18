@@ -31,7 +31,6 @@ namespace Otlob.APIs.Controllers
         }
         // POST: api/Account/Login
         [HttpPost("Login")]
-        [ValidateAntiForgeryToken]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
@@ -47,7 +46,6 @@ namespace Otlob.APIs.Controllers
         }
         // POST: api/Account/register
         [HttpPost("Register")]
-        [ValidateAntiForgeryToken]
         public async Task<ActionResult<UserDto>> Register(RegisterDto model)
         {
             if(CheckEmailExistAsync(model.Email).Result.Value)
@@ -94,22 +92,37 @@ namespace Otlob.APIs.Controllers
         public async Task<ActionResult<AddressDto>> GetUserAddress()
         {
             var user = await _userManager.FindUserWithAddressAsync(User);
-            var address = _mapper.Map<AddressDto>(user.Address);
+            var address = _mapper.Map<Address,AddressDto>(user.Address);
             return Ok(address);
         }
-        // Put : api/account address
+        // PUT: api/account/address
         [Authorize]
         [HttpPut("address")]
         public async Task<ActionResult<AddressDto>> UpdateUserAddress(AddressDto updatedAddress)
         {
             var user = await _userManager.FindUserWithAddressAsync(User);
 
-            if (user?.Address == null) return NotFound("User or Address not found");
-            _mapper.Map(updatedAddress, user.Address);
+            if (user == null) return NotFound("User not found");
+
+            if (user.Address == null)
+            {
+                // If no address exists, create a new one
+                user.Address = _mapper.Map<Address>(updatedAddress);
+            }
+            else
+            {
+                // If address exists, update it
+                _mapper.Map(updatedAddress, user.Address);
+            }
+
             var result = await _userManager.UpdateAsync(user);
-            if (result.Succeeded) return Ok(_mapper.Map<AddressDto>(user.Address));
+
+            if (result.Succeeded)
+                return Ok(_mapper.Map<AddressDto>(user.Address));
+
             return BadRequest("Problem updating the user");
         }
+
 
         // GET : api/account/emailexist
         [HttpGet("emailexist")]

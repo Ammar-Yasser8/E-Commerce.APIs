@@ -22,7 +22,6 @@ namespace Otlob.APIs.Controllers
         }
         // POST api/orders
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<ActionResult<OrderToReturnDto>> CreateOrder(OrderDto orderDto)
         {
             var email = User.FindFirstValue(ClaimTypes.Email);
@@ -39,7 +38,7 @@ namespace Otlob.APIs.Controllers
             var orders = await _orderService.GetOrdersForUserAsync(buyerEmail);
             return Ok(_mapper.Map<IReadOnlyList<Order>,IReadOnlyList<OrderToReturnDto>>(orders));
         }
-        // Get : api/orders/id?email={email}
+        // Get : api/orders/id
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderToReturnDto>> GetOrderForUser(int id)
         {

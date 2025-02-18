@@ -23,7 +23,6 @@ namespace Otlob.APIs
         public async static Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
             // Add services to the container.
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -76,7 +75,11 @@ namespace Otlob.APIs
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"])),
                     ClockSkew = TimeSpan.FromDays(1)
                 };
-            }); 
+            });
+
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();  // Enables logging to console
+            builder.Logging.AddDebug();
             var app = builder.Build();
 
             // Create a scope to get an instance of the DbContext Explicitly
