@@ -31,6 +31,7 @@ namespace Otlob.APIs.Controllers
         }
         // POST: api/Account/Login
         [HttpPost("Login")]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
@@ -46,6 +47,7 @@ namespace Otlob.APIs.Controllers
         }
         // POST: api/Account/register
         [HttpPost("Register")]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult<UserDto>> Register(RegisterDto model)
         {
             if(CheckEmailExistAsync(model.Email).Result.Value)

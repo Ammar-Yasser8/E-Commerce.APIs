@@ -17,6 +17,7 @@ namespace Otlob.APIs.Controllers
         }
         // POST : api/payments/basketId
         [HttpPost("{basketId}")]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult<CustomerBasket>> CreateOrUpdatePaymentIntent(string basketId)
         {
             var basket = await _paymentService.CreateOrUpdatePaymentIntent(basketId);
