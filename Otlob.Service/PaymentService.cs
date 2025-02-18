@@ -3,6 +3,7 @@ using Otlob.Core;
 using Otlob.Core.IRepositories;
 using Otlob.Core.Models;
 using Otlob.Core.Models.Order;
+using Otlob.Core.Specification.OrderSpecifications;
 using Stripe;
 using System;
 using System.Collections.Generic;
@@ -83,5 +84,23 @@ namespace Otlob.Service
              return basket;
 
         }
+
+        public async Task<Core.Models.Order.Order?> UpdateOrderPaymentSucceeded(string paymentIntentId, bool succeeded)
+        {
+            var spec = new OrderWIthPaymentIntentSpec(paymentIntentId);
+            var orderTask = _unitOfWork.Repository<Core.Models.Order.Order>().GetAsyncWithSpec(spec);
+            var order = await orderTask;
+            if (order == null) return null;
+
+            if (succeeded)
+                order.OrderStatus = OrderStatus.PaymentReceived;
+            else
+                order.OrderStatus = OrderStatus.PaymentFailed;
+            _unitOfWork.Repository<Core.Models.Order.Order>().Update(order);
+            await _unitOfWork.CompleteAsync();
+            return order;
+        }
+
+
     }
 }
