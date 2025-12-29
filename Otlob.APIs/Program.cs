@@ -24,10 +24,22 @@ namespace Otlob.APIs
         {
             var builder = WebApplication.CreateBuilder(args);
             // Add services to the container.
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+            });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", policy =>
+                {
+                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:5173", "http://localhost:5173");
+                });
+            });
+
             builder.Services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration
@@ -73,6 +85,7 @@ namespace Otlob.APIs
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"])),
+                    RoleClaimType = System.Security.Claims.ClaimTypes.Role,
                     ClockSkew = TimeSpan.FromDays(1)
                 };
             });
@@ -94,7 +107,8 @@ namespace Otlob.APIs
                 await identityDbContext.Database.MigrateAsync();    
                 await AppContextSeed.SeedAsync(dbContext);
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
-                await AppIdentityDbContextSeed.SeedAsync(userManager);
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                await AppIdentityDbContextSeed.SeedAsync(userManager, roleManager);
             }
             catch (Exception ex)
             {
@@ -109,6 +123,7 @@ namespace Otlob.APIs
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseCors("CorsPolicy");
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();

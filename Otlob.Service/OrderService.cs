@@ -98,5 +98,28 @@ namespace Otlob.Service
             var orders = await orderRepo.GetAllAsyncWithSpec(spec);
             return orders.ToList().AsReadOnly();
         }
+
+        public async Task<IReadOnlyList<Order>> GetOrdersAsync()
+        {
+            var orderRepo = _unitOfWork.Repository<Order>();
+            var spec = new OrderWithItemsAndDeliveryMethodSpecification();
+            var orders = await orderRepo.GetAllAsyncWithSpec(spec);
+            return orders.ToList().AsReadOnly();
+        }
+
+        public async Task<Order?> GetOrderByIdAsync(int id)
+        {
+            var orderRepo = _unitOfWork.Repository<Order>();
+            var spec = new OrderWithItemsAndDeliveryMethodSpecification(id);
+            return await orderRepo.GetAsyncWithSpec(spec);
+        }
+
+        public async Task<Order?> UpdateOrderAsync(Order order)
+        {
+            var orderRepo = _unitOfWork.Repository<Order>();
+            orderRepo.Update(order);
+            var result = await _unitOfWork.CompleteAsync();
+            return result > 0 ? order : null;
+        }
     }
 }

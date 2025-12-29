@@ -13,11 +13,15 @@ namespace Otlob.APIs.Helper
         {
             CreateMap<Product, ProductToReverseDto>()
                 .ForMember(dest => dest.Brand, opt => opt.MapFrom(src => src.ProductBrand.Name))
+                .ForMember(dest => dest.BrandId, opt => opt.MapFrom(src => src.BrandId))
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.ProductCategory.Name))
+                .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
                 .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<ProductPicUrlResolver>());
 
             CreateMap<CustomerBasketDto, CustomerBasket>();
             CreateMap<BasketItemDto, BasketItem>();
+            CreateMap<AddressDto, Otlob.Core.Models.Order.Address>();
+            CreateMap<ProductCreateDto, Product>();
 
             // Correct Address mapping
             CreateMap<Otlob.Core.Models.Identity.Address, Otlob.APIs.DTOs.AddressDto>().ReverseMap();

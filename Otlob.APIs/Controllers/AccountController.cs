@@ -37,11 +37,15 @@ namespace Otlob.APIs.Controllers
             if (user == null) return Unauthorized("un authorized , Email not exist");
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
             if (!result.Succeeded) return Unauthorized("un authorized , you are not");
+            
+            var roles = await _userManager.GetRolesAsync(user);
+
             return Ok(new UserDto
             {
                 DisplayName = user.DisplayName,
                 Token = await _authService.CreateTokenAsync(user, _userManager),
-                Email = user.Email!
+                Email = user.Email!,
+                Role = roles.FirstOrDefault() 
             });
         }
         // POST: api/Account/register
@@ -59,12 +63,15 @@ namespace Otlob.APIs.Controllers
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded is false) return BadRequest("Bad request you have made");
+            
+            await _userManager.AddToRoleAsync(user, "Member");
+
             return Ok(new UserDto
             {
                 DisplayName = user.DisplayName,
                 Email = user.Email,
                 Token = await _authService.CreateTokenAsync(user, _userManager),
-
+                Role = "Member"
             });
 
 
@@ -78,11 +85,15 @@ namespace Otlob.APIs.Controllers
             var email = User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null) return Unauthorized("un authorized , Email not exist");
+            
+            var roles = await _userManager.GetRolesAsync(user);
+
             return Ok(new UserDto
             {
                 DisplayName = user.DisplayName,
                 Email = user.Email,
                 Token = await _authService.CreateTokenAsync(user, _userManager),
+                Role = roles.FirstOrDefault()
             });
 
         }
@@ -132,5 +143,49 @@ namespace Otlob.APIs.Controllers
         }
 
 
+        // POST: api/Account/promote
+        [Authorize(Roles = "Admin")]
+        [HttpPost("promote")]
+        public async Task<ActionResult> PromoteToAdmin(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null) return NotFound("User not found");
+
+            var result = await _userManager.AddToRoleAsync(user, "Admin");
+            if (!result.Succeeded) return BadRequest("Failed to add to role");
+
+            return Ok(new { message = $"User {email} is now an Admin" });
+        }
+
+        // GET: api/Account/users
+        [Authorize(Roles = "Admin")]
+        [HttpGet("users")]
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
+        {
+            var users = _userManager.Users.ToList();
+            var userDtos = new List<UserDto>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                userDtos.Add(new UserDto
+                {
+                    Email = user.Email,
+                    DisplayName = user.DisplayName,
+                    Role = roles.FirstOrDefault() ?? "Member"
+                });
+            }
+
+            return Ok(userDtos);
+        }
+
+        [Authorize]
+        [HttpGet("debug-claims")]
+        public ActionResult GetClaims()
+        {
+            var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
+            return Ok(claims);
+        }
+
     }
-}    
+}

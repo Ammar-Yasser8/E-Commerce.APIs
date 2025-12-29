@@ -56,5 +56,30 @@ namespace Otlob.APIs.Controllers
             if (deliveryMethods == null) return BadRequest();
             return Ok(deliveryMethods);
         }
+
+        // GET: api/orders/all 
+        [HttpGet("all")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<IReadOnlyList<OrderToReturnDto>>> GetAllOrders()
+        {
+            var orders = await _orderService.GetOrdersAsync();
+            return Ok(_mapper.Map<IReadOnlyList<Order>, IReadOnlyList<OrderToReturnDto>>(orders));
+        }
+
+        // PUT: api/orders/{id}/status
+        [HttpPut("{id}/status")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<OrderToReturnDto>> UpdateOrderStatus(int id, [FromBody] OrderStatus status)
+        {
+            var order = await _orderService.GetOrderByIdAsync(id);
+            if (order == null) return NotFound();
+            
+            order.OrderStatus = status;
+            var updatedOrder = await _orderService.UpdateOrderAsync(order);
+            
+            if (updatedOrder == null) return BadRequest("Problem updating order status");
+            
+            return Ok(_mapper.Map<Order, OrderToReturnDto>(updatedOrder));
+        }
     }
 }

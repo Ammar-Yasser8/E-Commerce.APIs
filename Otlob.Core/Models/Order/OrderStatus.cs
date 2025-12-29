@@ -14,7 +14,9 @@ namespace Otlob.Core.Models.Order
         [EnumMember(Value = "PaymentReceived")]
         PaymentReceived,
         [EnumMember(Value = "PaymentFailed")]
-        PaymentFailed
+        PaymentFailed,
+        [EnumMember(Value = "Shipped")]
+        Shipped
 
     }
 }
